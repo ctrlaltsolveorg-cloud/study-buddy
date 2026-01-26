@@ -83,7 +83,7 @@
         .google-btn:hover { background-color: #f8f9fa; border-color: #ccc; }
 
         /* Sections Visibility */
-        #setup-section, #results-section, #chat-section, #register-panel { display: none; margin-top: 20px; }
+        #auth-container, #setup-section, #results-section, #chat-section, #register-panel { display: none; margin-top: 20px; }
         
         .user-card {
             display: flex;
@@ -128,30 +128,19 @@
         .message.received { background: #333; color: white; float: left; }
         
         .chat-input-area { display: flex; gap: 10px; align-items: center; }
-        .icon-btn { 
-            width: 40px; height: 40px; border-radius: 50%; padding: 0; 
-            display: flex; align-items: center; justify-content: center; font-size: 18px;
-        }
-        .recording { animation: pulse 1.5s infinite; background: #ff6b6b !important; }
         
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        
-        img.chat-img { max-width: 100%; border-radius: 10px; margin-top: 5px; }
-        audio { max-width: 100%; margin-top: 5px; }
+        #welcome-msg { position: absolute; top: 20px; right: 20px; font-weight: bold; color: #a18cd1; display: none; }
     </style>
 </head>
 <body>
+<div id="welcome-msg"></div>
 
 <div class="container">
     <!-- Step 0: Auth (Login/Register) -->
     <div id="auth-container">
         <!-- Login Panel -->
         <div id="login-panel" class="auth-card">
-            <h2>Study Buddy 🌿</h2>
+            <h2>Study Buddy </h2>
             <p class="subtitle">Relax, Connect, Learn.</p>
             <button onclick="handleGoogleLogin()" class="google-btn">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" height="18">
@@ -162,21 +151,30 @@
 
     <!-- Step 1: User Setup (Class/Chapter) -->
     <div id="setup-section">
-        <h1>Find Study Buddy 📚</h1>
-        <div class="form-group">
-            <label>Apna Naam Batayein:</label>
+        <h1>Find Study Buddy </h1>
+        <div class="form-group" id="username-group">
+            <label>Name:</label>
             <input type="text" id="username" placeholder="Ex: Prince">
         </div>
         <div class="form-group">
             <label>Class:</label>
             <select id="classInput">
-                <option value="9">Class 9</option>
-                <option value="10">Class 10</option>
-                <option value="11">Class 11</option>
+            <option value="1">Class 1</option>
+            <option value="2">Class 2</option>
+            <option value="3">Class 3</option>
+            <option value="4">Class 4</option>
+            <option value="5">Class 5</option>
+            <option value="6">Class 6</option>
+            <option value="7">Class 7</option>
+            <option value="8">Class 8</option>
+            <option value="9">Class 9</option>
+            <option value="10">Class 10</option>
+            <option value="11">Class 11</option>
+            <option value="12">Class 12</option>
             </select>
         </div>
         <div class="form-group">
-            <label>Chapter Name (Jo abhi padh rahe ho):</label>
+            <label>Chapter Name (Currently studying):</label>
             <input type="text" id="chapterInput" placeholder="Ex: Motion, Force, Gravitation">
         </div>
         <button onclick="enterStudyRoom()">Join Room</button>
@@ -185,7 +183,7 @@
 
     <!-- Step 2: List of Users -->
     <div id="results-section">
-        <h2>Available Students 🍃</h2>
+        <h2>Available Students </h2>
         <p id="search-status"></p>
         <p style="text-align:center; font-size:12px; color:#777;">Click on a student to start chatting privately</p>
         <div id="users-list"></div>
@@ -199,11 +197,6 @@
         <div id="chat-interface" style="display:none;">
             <div id="chat-box"></div>
             <div class="chat-input-area">
-                <button class="icon-btn" onclick="document.getElementById('imgInput').click()">📷</button>
-                <input type="file" id="imgInput" accept="image/*" hidden onchange="handleImageUpload(this)">
-                
-                <button class="icon-btn" id="micBtn" onmousedown="startRecording()" onmouseup="stopRecording()" ontouchstart="startRecording()" ontouchend="stopRecording()">🎤</button>
-                
                 <input type="text" id="messageInput" placeholder="Type message...">
                 <button onclick="sendMessage()" style="width: auto;">➤</button>
             </div>
@@ -225,8 +218,6 @@
     let currentUser = null;
     let myProfile = {}; // Stores name, class, chapter
     let activeChatPartner = null; // The user I am currently chatting with
-    let mediaRecorder = null;
-    let audioChunks = [];
 
     async function handleGoogleLogin() {
         if (window.location.protocol === 'file:') {
@@ -237,7 +228,7 @@
         try {
             const { data, error } = await client.auth.signInWithOAuth({
                 provider: 'google',
-                options: { redirectTo: 'https://ctrlaltsolveorg-cloud.github.io/study-buddy/' } 
+                options: { redirectTo: window.location.href } 
             });
             if (error) throw error;
         } catch (error) {
@@ -247,20 +238,45 @@
 
     async function logout() {
         await client.auth.signOut();
+        localStorage.removeItem('study_username');
         location.reload();
     }
 
-    async function checkUser() {
-        const { data: { user } } = await client.auth.getUser();
-        if (user) {
+    // Auth State Listener (Better than checkUser)
+    client.auth.onAuthStateChange((event, session) => {
+        if (session) {
+            const user = session.user;
             currentUser = user;
+            
+            // Logic for Name Persistence
+            const savedName = localStorage.getItem('study_username');
+            const googleName = user.user_metadata.full_name;
+            const finalName = savedName || googleName || "Student";
+
+            // Show Welcome Name in Corner
+            const welcomeDiv = document.getElementById('welcome-msg');
+            welcomeDiv.innerText = `Welcome, ${finalName}`;
+            welcomeDiv.style.display = 'block';
+
+            // Pre-fill Name
+            document.getElementById('username').value = finalName;
+
+            // If name is already saved (Old User), hide the name input for direct feel
+            // If new user, show input to ask name
+            if (savedName) {
+                document.getElementById('username-group').style.display = 'none';
+            } else {
+                document.getElementById('username-group').style.display = 'block';
+            }
+
+            // Show Setup Section (Room Entry)
             document.getElementById('auth-container').style.display = 'none';
             document.getElementById('setup-section').style.display = 'block';
+        } else {
+            document.getElementById('auth-container').style.display = 'block';
+            document.getElementById('setup-section').style.display = 'none';
         }
-    }
-
-    // Check on load
-    checkUser();
+    });
 
     // --- REALTIME ROOM LOGIC ---
 
@@ -272,6 +288,12 @@
         if(!name || !chapter) { alert("Please fill all details"); return; }
 
         myProfile = { name, cls, chapter, id: currentUser.id };
+        
+        // Save Name to LocalStorage for next time
+        localStorage.setItem('study_username', name);
+
+        // Update Welcome Message
+        document.getElementById('welcome-msg').innerText = `Welcome, ${name}`;
 
         // UI Updates
         document.getElementById('setup-section').style.display = 'none';
@@ -399,90 +421,10 @@
         
         if (data.type === 'text') {
             div.innerText = data.text;
-        } else if (data.type === 'image') {
-            div.innerHTML = `<img src="${data.content}" class="chat-img">`;
-        } else if (data.type === 'audio') {
-            div.innerHTML = `<audio controls src="${data.content}"></audio>`;
         }
         
         chatBox.appendChild(div);
         chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    // --- MEDIA LOGIC (Photo & Mic) ---
-
-    function handleImageUpload(input) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                // Simple Base64 send (Note: Large files will fail in Realtime Broadcast)
-                const base64 = e.target.result;
-                if(base64.length > 50000) { // Limit ~50KB for stability
-                    alert("Image too large for this demo! Please choose a smaller image.");
-                    return;
-                }
-                
-                const payload = {
-                    user: myProfile.name,
-                    content: base64,
-                    to: activeChatPartner.id,
-                    from: currentUser.id,
-                    type: 'image'
-                };
-
-                await myChannel.send({ type: 'broadcast', event: 'message', payload: payload });
-                displayMessage(payload, 'sent');
-            }
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    // Mic Logic
-    async function startRecording() {
-        if(!activeChatPartner) return alert("Select a user first!");
-        document.getElementById('micBtn').classList.add('recording');
-        
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream);
-            audioChunks = [];
-            
-            mediaRecorder.ondataavailable = event => {
-                audioChunks.push(event.data);
-            };
-            
-            mediaRecorder.onstop = async () => {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                const reader = new FileReader();
-                reader.readAsDataURL(audioBlob);
-                reader.onloadend = async () => {
-                    const base64 = reader.result;
-                    
-                    const payload = {
-                        user: myProfile.name,
-                        content: base64,
-                        to: activeChatPartner.id,
-                        from: currentUser.id,
-                        type: 'audio'
-                    };
-                    
-                    await myChannel.send({ type: 'broadcast', event: 'message', payload: payload });
-                    displayMessage(payload, 'sent');
-                };
-            };
-            
-            mediaRecorder.start();
-        } catch(err) {
-            console.error("Mic Error:", err);
-            alert("Microphone access denied.");
-        }
-    }
-
-    function stopRecording() {
-        document.getElementById('micBtn').classList.remove('recording');
-        if(mediaRecorder && mediaRecorder.state !== 'inactive') {
-            mediaRecorder.stop();
-        }
     }
 </script>
 
