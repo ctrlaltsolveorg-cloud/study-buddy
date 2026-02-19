@@ -3,360 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Study Buddy Finder</title>
+    <title>Study Buddy Finder - Pro Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #000000;
-            color: #e0e0e0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            align-items: center;
-        }
-        .container {
-            width: 100%;
-            max-width: 800px;
-            background: rgba(20, 20, 20, 0.85); /* Dark Glassmorphism */
-            backdrop-filter: blur(10px);
-            padding: 20px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        h1, h2 { text-align: center; color: #fff; font-weight: 400; letter-spacing: 1px; }
-        .auth-card {
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        .subtitle {
-            text-align: center;
-            color: #aaa;
-            margin-top: -10px;
-            margin-bottom: 20px;
-        }
-
-        /* Form Sections */
+        body { font-family: 'Segoe UI', sans-serif; background: #000; color: #e0e0e0; padding: 20px; display: flex; justify-content: center; min-height: 100vh; align-items: center; }
+        .container { width: 100%; max-width: 800px; background: rgba(20, 20, 20, 0.85); backdrop-filter: blur(10px); padding: 20px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; }
+        h1, h2 { text-align: center; color: #fff; }
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #444;
-            border-radius: 15px;
-            box-sizing: border-box;
-            transition: border-color 0.3s, box-shadow 0.3s;
-            background: rgba(40, 40, 40, 0.9);
-            color: white;
-        }
-        input:focus, select:focus {
-            border-color: #a18cd1;
-            outline: none;
-            box-shadow: 0 0 10px rgba(161, 140, 209, 0.2);
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background-image: linear-gradient(to right, #a18cd1 0%, #fbc2eb 100%);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: transform 0.2s;
-        }
-        button:hover { transform: scale(1.02); opacity: 0.9; }
-        
-        .google-btn {
-            background-color: white;
-            color: #333;
-            border: 1px solid #ddd;
-            margin-top: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            background: white !important; /* Override gradient */
-        }
-        .google-btn:hover { background-color: #f8f9fa; border-color: #ccc; }
-
-        /* Sections Visibility */
-        #auth-container, #setup-section, #results-section, #chat-section, #register-panel { display: none; margin-top: 20px; }
-        
-        .user-card {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #444;
-            background: rgba(40, 40, 40, 0.6);
-            margin-bottom: 10px;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .user-card:hover { background: rgba(60, 60, 60, 0.9); }
-        .user-card.active { border: 2px solid #a18cd1; background: #333; }
-        
-        .user-info p { margin: 0; color: #bbb; font-size: 14px; }
-        .online-dot {
-            height: 10px; width: 10px; background-color: #4caf50; border-radius: 50%; display: inline-block;
-        }
-
-        /* Chat Section */ 
-        #chat-box {
-            height: 300px;
-            border: 1px solid #444;
-            overflow-y: scroll;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.3);
-            margin-bottom: 10px;
-            border-radius: 15px;
-        }
-        .message {
-            margin-bottom: 10px;
-            padding: 8px 12px;
-            border-radius: 15px;
-            max-width: 70%;
-            clear: both;
-            font-size: 14px;
-            word-wrap: break-word;
-        }
-        .message.sent { background: #d4fc79; background: linear-gradient(to right, #96e6a1 0%, #d4fc79 100%); float: right; color: #333; }
-        .message.received { background: #333; color: white; float: left; }
-        
-        .chat-input-area { display: flex; gap: 10px; align-items: center; }
-        
-        #welcome-msg { position: absolute; top: 20px; right: 20px; font-weight: bold; color: #a18cd1; display: none; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #a18cd1; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #444; border-radius: 12px; background: rgba(30, 30, 30, 0.9); color: white; outline: none; }
+        button { width: 100%; padding: 12px; background: linear-gradient(to right, #a18cd1, #fbc2eb); color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.3s; }
+        button:hover { opacity: 0.9; transform: translateY(-2px); }
+        .google-btn { background: white !important; color: #333; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        #auth-container, #setup-section, #results-section, #chat-section { display: none; margin-top: 20px; }
+        .user-card { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(50, 50, 50, 0.4); margin-bottom: 10px; border-radius: 12px; cursor: pointer; border: 1px solid transparent; }
+        .user-card:hover { border-color: #a18cd1; }
+        .user-card.active { background: #333; border-color: #fbc2eb; }
+        #chat-box { height: 300px; border: 1px solid #444; overflow-y: scroll; padding: 15px; background: rgba(0, 0, 0, 0.5); border-radius: 12px; display: flex; flex-direction: column; }
+        .message { margin-bottom: 10px; padding: 10px 14px; border-radius: 15px; max-width: 75%; word-wrap: break-word; }
+        .message.sent { background: #a18cd1; align-self: flex-end; color: white; }
+        .message.received { background: #444; align-self: flex-start; color: white; }
+        .chat-input-area { display: flex; gap: 10px; margin-top: 10px; }
+        #welcome-msg { position: absolute; top: 20px; right: 20px; color: #fbc2eb; font-weight: bold; }
     </style>
 </head>
 <body>
 <div id="welcome-msg"></div>
-
 <div class="container">
     <div id="auth-container">
-        <div id="login-panel" class="auth-card">
-            <h2>Study Buddy </h2>
-            <p class="subtitle">Relax, Connect, Learn.</p>
-            <button onclick="handleGoogleLogin()" class="google-btn">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" height="18">
-                Continue with Google
-            </button>
-        </div>
+        <h1>Study Buddy</h1>
+        <p style="text-align:center">Sign in to find students studying the same chapter.</p>
+        <button onclick="handleGoogleLogin()" class="google-btn">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Continue with Google
+        </button>
     </div>
 
     <div id="setup-section">
-        <h1>Find Study Buddy </h1>
-        <div class="form-group" id="username-group">
-            <label>Name:</label>
-            <input type="text" id="username" placeholder="Ex: Prince">
-        </div>
-        <div class="form-group">
-            <label>Class:</label>
-            <select id="classInput" onchange="updateChapters()">
-                <option value="" disabled selected>Select Class</option>
-                <option value="1">Class 1</option>
-                <option value="2">Class 2</option>
-                <option value="3">Class 3</option>
-                <option value="4">Class 4</option>
-                <option value="5">Class 5</option>
-                <option value="6">Class 6</option>
-                <option value="7">Class 7</option>
-                <option value="8">Class 8</option>
-                <option value="9">Class 9</option>
-                <option value="10">Class 10</option>
-                <option value="11">Class 11</option>
-                <option value="12">Class 12</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Chapter Name:</label>
-            <select id="chapterInput">
-                <option value="">Select Class First</option>
-            </select>
-        </div>
-        <button onclick="enterStudyRoom()">Join Room</button>
-        <button onclick="logout()" style="background:#dc3545; margin-top:10px;">Logout</button>
+        <h2>What are you studying?</h2>
+        <div class="form-group" id="username-group"><label>Your Name</label><input type="text" id="username"></div>
+        <div class="form-group"><label>Class</label><select id="classInput" onchange="updateSubjects()"></select></div>
+        <div class="form-group"><label>Subject</label><select id="subjectInput" onchange="updateChapters()"></select></div>
+        <div class="form-group"><label>Chapter</label><select id="chapterInput"></select></div>
+        <button onclick="enterStudyRoom()">Join Study Room</button>
+        <button onclick="logout()" style="background:transparent; color:#ff4d4d; border:1px solid #ff4d4d; margin-top:10px;">Logout</button>
     </div>
 
     <div id="results-section">
-        <h2>Available Students </h2>
-        <p id="search-status"></p>
+        <h2>Students Online</h2>
         <div id="users-list"></div>
-        <button onclick="leaveRoom()" style="background:#6c757d; margin-top:10px;">Leave Room</button>
+        <button onclick="location.reload()" style="background:#555; margin-top:10px;">Change Topic</button>
     </div>
 
     <div id="chat-section">
-        <h2 id="chat-header">Select a user to chat</h2>
+        <h2 id="chat-header">Chat</h2>
         <div id="chat-interface" style="display:none;">
             <div id="chat-box"></div>
             <div class="chat-input-area">
-                <input type="text" id="messageInput" placeholder="Type message...">
-                <button onclick="sendMessage()" style="width: auto;">➤</button>
+                <input type="text" id="messageInput" placeholder="Type something...">
+                <button onclick="sendMessage()" style="width:60px;">Send</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // --- NCERT DATA OBJECT ---
-    const ncertChapters = {
-        "1": ["Shapes and Space", "Numbers from 1 to 9", "Addition", "Subtraction", "Numbers from 10 to 20"],
-        "2": ["What is Long, What is Round?", "Counting in Groups", "How Much Can You Carry?", "Counting in Tens"],
-        "3": ["Where to Look From", "Fun with Numbers", "Give and Take", "Long and Short", "Shapes and Designs"],
-        "4": ["Building with Bricks", "Long and Short", "A Trip to Bhopal", "The Way The World Looks"],
-        "5": ["The Fish Tale", "Shapes and Angles", "How Many Squares?", "Parts and Wholes"],
-        "6": ["Knowing Our Numbers", "Whole Numbers", "Playing with Numbers", "Basic Geometrical Ideas", "Food: Where does it come from?", "Components of Food", "Body Movements"],
-        "7": ["Integers", "Fractions and Decimals", "Data Handling", "Nutrition in Plants", "Nutrition in Animals", "Heat", "Acids, Bases and Salts"],
-        "8": ["Rational Numbers", "Linear Equations", "Crop Production and Management", "Microorganisms", "Coal and Petroleum", "Force and Pressure", "Sound"],
-        "9": ["Number Systems", "Polynomials", "Matter in Our Surroundings", "The Fundamental Unit of Life", "Motion", "Force and Laws of Motion", "Gravitation"],
-        "10": ["Real Numbers", "Polynomials", "Chemical Reactions and Equations", "Acids, Bases and Salts", "Life Processes", "Light - Reflection and Refraction", "Electricity"],
-        "11": ["Sets", "Relations and Functions", "Units and Measurements", "Motion in a Straight Line", "Cell: The Unit of Life", "Some Basic Concepts of Chemistry"],
-        "12": ["Relations and Functions", "Inverse Trigonometric Functions", "Electric Charges and Fields", "Solution", "Reproduction in Organisms", "Genetics and Evolution"]
+    const ncertData = {
+        "6": {
+            "Science": ["Food: Where Does It Come From?", "Components of Food", "Fibre to Fabric", "Sorting Materials into Groups", "Separation of Substances", "Changes Around Us", "Getting to Know Plants", "Body Movements", "The Living Organisms", "Motion and Measurement", "Light, Shadows and Reflections", "Electricity and Circuits", "Fun with Magnets", "Water", "Air Around Us", "Garbage In, Garbage Out"],
+            "Maths": ["Knowing Our Numbers", "Whole Numbers", "Playing with Numbers", "Basic Geometrical Ideas", "Understanding Elementary Shapes", "Integers", "Fractions", "Decimals", "Data Handling", "Mensuration", "Algebra", "Ratio and Proportion", "Symmetry", "Practical Geometry"],
+            "SST": ["What, Where, How and When?", "From Hunting-Gathering to Growing Food", "In the Earliest Cities", "What Books and Burials Tell Us", "Kingdoms, Kings and an Early Republic", "New Questions and Ideas", "Ashoka, The Emperor Who Gave Up War", "Vital Villages, Thriving Towns", "Traders, Kings and Pilgrims", "The Earth in the Solar System", "Globe: Latitudes and Longitudes", "Motions of the Earth", "Maps", "Major Domains of the Earth", "Understanding Diversity", "Diversity and Discrimination", "What is Government?", "Panchayati Raj", "Rural Administration", "Urban Administration", "Rural Livelihoods", "Urban Livelihoods"],
+            "English": ["Who Did Patrick's Homework?", "A House, A Home", "How the Dog Found Himself a New Master!", "The Kite", "Taro's Reward", "The Quarrel", "An Indian-American Woman in Space: Kalpana Chawla", "Beauty", "A Different Kind of School", "Where Do All the Teachers Go?", "Who I Am", "The Wonderful Words", "Fair Play", "Vocation", "A Game of Chance", "Whatif", "Desert Animals", "The School Boy", "The Banyan Tree"]
+        },
+        "7": {
+            "Science": ["Nutrition in Plants", "Nutrition in Animals", "Fibre to Fabric", "Heat", "Acids, Bases and Salts", "Physical and Chemical Changes", "Weather, Climate and Adaptations", "Winds, Storms and Cyclones", "Soil", "Respiration in Organisms", "Transportation in Animals and Plants", "Reproduction in Plants", "Motion and Time", "Electric Current and its Effects", "Light", "Water: A Precious Resource", "Forests: Our Lifeline", "Wastewater Story"],
+            "Maths": ["Integers", "Fractions and Decimals", "Data Handling", "Simple Equations", "Lines and Angles", "The Triangle and its Properties", "Congruence of Triangles", "Comparing Quantities", "Rational Numbers", "Practical Geometry", "Perimeter and Area", "Algebraic Expressions", "Exponents and Powers", "Symmetry", "Visualising Solid Shapes"],
+            "SST": ["Tracing Changes Through A Thousand Years", "New Kings And Kingdoms", "The Delhi Sultans", "The Mughal Empire", "Rulers And Buildings", "Towns, Traders And Craftspersons", "Tribes, Nomads And Settled Communities", "Devotional Paths To The Divine", "The Making Of Regional Cultures", "Eighteenth-Century Political Formations", "Environment", "Inside Our Earth", "Our Changing Earth", "Air", "Water", "Natural Vegetation and Wild Life", "Human Environment – Settlement, Transport and Communication", "Human Environment Interactions", "Life in the Deserts", "On Equality", "Role of the Government in Health", "How the State Government Works", "Growing Up as Boys and Girls", "Women Change the World", "Understanding Media", "Markets Around Us", "A Shirt in the Market"],
+            "English": ["Three Questions", "The Squirrel", "A Gift of Chappals", "The Rebel", "The Gopal and the Hilsa Fish", "The Chivvy", "The Ashes That Made Trees Bloom", "The Shed", "Quality", "Trees", "Expert Detectives", "Mystery of the Talking Fan", "The Invention of Vita-Wonk", "Dad and the Cat and the Tree", "Fire: Friend and Foe", "Meadow Surprises", "A Homage to our Brave Soldiers", "Garden Snake", "The Bear Story", "A Tiger in the House", "An Alien Hand"]
+        },
+        "8": {
+            "Science": ["Crop Production and Management", "Microorganisms: Friend and Foe", "Synthetic Fibres and Plastics", "Materials: Metals and Non-Metals", "Coal and Petroleum", "Combustion and Flame", "Conservation of Plants and Animals", "Cell - Structure and Functions", "Reproduction in Animals", "Reaching the Age of Adolescence", "Force and Pressure", "Friction", "Sound", "Chemical Effects of Electric Current", "Some Natural Phenomena", "Light", "Stars and The Solar System", "Pollution of Air and Water"],
+            "Maths": ["Rational Numbers", "Linear Equations in One Variable", "Understanding Quadrilaterals", "Practical Geometry", "Data Handling", "Squares and Square Roots", "Cubes and Cube Roots", "Comparing Quantities", "Algebraic Expressions and Identities", "Visualising Solid Shapes", "Mensuration", "Exponents and Powers", "Direct and Inverse Proportions", "Factorisation", "Introduction to Graphs", "Playing with Numbers"],
+            "SST": ["How, When and Where", "From Trade to Territory", "Ruling the Countryside", "Tribals, Dikus and the Vision of a Golden Age", "When People Rebel", "Colonialism and the City", "Weavers, Iron Smelters and Factory Owners", "Civilising the Native, Educating the Nation", "Women, Caste and Reform", "The Changing World of Visual Arts", "The Making of the National Movement", "India After Independence", "Resources", "Land, Soil, Water, Natural Vegetation and Wildlife Resources", "Mineral and Power Resources", "Agriculture", "Industries", "Human Resources", "The Indian Constitution", "Understanding Secularism", "Why do we need a Parliament?", "Understanding Laws", "Judiciary", "Understanding Our Criminal Justice System", "Understanding Marginalisation", "Confronting Marginalisation", "Public Facilities", "Law and Social Justice"],
+            "English": ["The Best Christmas Present in the World", "The Ant and the Cricket", "The Tsunami", "Geography Lesson", "Glimpses of the Past", "Macavity: The Mystery Cat", "Bepin Choudhury's Lapse of Memory", "The Last Bargain", "The Summit Within", "The School Boy", "This is Jody's Fawn", "The Duck and the Kangaroo", "A Visit to Cambridge", "When I set out for Lyonnesse", "A Short Monsoon Diary", "On the Grasshopper and Cricket", "The Great Stone Face", "The Selfish Giant", "The Treasure Within", "The Fight", "The Open Window", "Jalebis", "The Comet", "Ancient Education System of India"]
+        },
+        "9": {
+            "Science": ["Matter in Our Surroundings", "Is Matter Around Us Pure", "Atoms and Molecules", "Structure of the Atom", "The Fundamental Unit of Life", "Tissues", "Diversity in Living Organisms", "Motion", "Force and Laws of Motion", "Gravitation", "Work and Energy", "Sound", "Why Do We Fall Ill", "Natural Resources", "Improvement in Food Resources"],
+            "Maths": ["Number Systems", "Polynomials", "Coordinate Geometry", "Linear Equations in Two Variables", "Introduction to Euclid’s Geometry", "Lines and Angles", "Triangles", "Quadrilaterals", "Areas of Parallelograms and Triangles", "Circles", "Constructions", "Heron’s Formula", "Surface Areas and Volumes", "Statistics", "Probability"],
+            "SST": ["The French Revolution", "Socialism in Europe and the Russian Revolution", "Nazism and the Rise of Hitler", "Forest Society and Colonialism", "Pastoralists in the Modern World", "India - Size and Location", "Physical Features of India", "Drainage", "Climate", "Natural Vegetation and Wild Life", "Population", "What is Democracy? Why Democracy?", "Constitutional Design", "Electroral Politics", "Working of Institutions", "Democratic Rights", "The Story of Village Palampur", "People as Resource", "Poverty as a Challenge", "Food Security in India"],
+            "English": ["The Fun They Had", "The Road Not Taken", "The Sound of Music", "Wind", "The Little Girl", "Rain on the Roof", "A Truly Beautiful Mind", "The Lake Isle of Innisfree", "The Snake and the Mirror", "A Legend of the Northland", "My Childhood", "No Men Are Foreign", "Reach for the Top", "On Killing a Tree", "The Bond of Love", "The Snake Trying", "Kathmandu", "A Slumber Did My Spirit Seal", "If I Were You", "The Lost Child", "The Adventures of Toto", "Iswaran the Storyteller", "In the Kingdom of Fools", "The Happy Prince", "The Last Leaf", "A House Is Not a Home", "The Beggar"]
+        },
+        "10": {
+            "Science": ["Chemical Reactions and Equations", "Acids, Bases and Salts", "Metals and Non-metals", "Carbon and its Compounds", "Periodic Classification of Elements", "Life Processes", "Control and Coordination", "How do Organisms Reproduce?", "Heredity and Evolution", "Light – Reflection and Refraction", "The Human Eye and the Colourful World", "Electricity", "Magnetic Effects of Electric Current", "Sources of Energy", "Our Environment", "Management of Natural Resources"],
+            "Maths": ["Real Numbers", "Polynomials", "Pair of Linear Equations in Two Variables", "Quadratic Equations", "Arithmetic Progressions", "Triangles", "Coordinate Geometry", "Introduction to Trigonometry", "Some Applications of Trigonometry", "Circles", "Constructions", "Areas Related to Circles", "Surface Areas and Volumes", "Statistics", "Probability"],
+            "SST": ["The Rise of Nationalism in Europe", "Nationalism in India", "The Making of a Global World", "The Age of Industrialisation", "Print Culture and the Modern World", "Resources and Development", "Forest and Wildlife Resources", "Water Resources", "Agriculture", "Minerals and Energy Resources", "Manufacturing Industries", "Lifelines of National Economy", "Power Sharing", "Federalism", "Gender, Religion and Caste", "Political Parties", "Outcomes of Democracy", "Development", "Sectors of the Indian Economy", "Money and Credit", "Globalisation and the Indian Economy", "Consumer Rights"],
+            "English": ["A Letter to God", "Dust of Snow", "Fire and Ice", "Nelson Mandela: Long Walk to Freedom", "A Tiger in the Zoo", "Two Stories about Flying", "How to Tell Wild Animals", "The Ball Poem", "From the Diary of Anne Frank", "Amanda!", "The Hundred Dresses", "The Trees", "Glimpses of India", "Fog", "Madam Rides the Bus", "The Tale of Custard the Dragon", "The Sermon at Benares", "For Anne Gregory", "The Proposal", "A Triumph of Surgery", "The Thief's Story", "The Midnight Visitor", "A Question of Trust", "Footprints without Feet", "The Making of a Scientist", "The Necklace", "The Hack Driver", "Bholi", "The Book That Saved the Earth"]
+        },
+        "11": {
+            "Physics": ["Physical World", "Units and Measurements", "Motion in a Straight Line", "Motion in a Plane", "Laws of Motion", "Work, Energy and Power", "System of Particles and Rotational Motion", "Gravitation", "Mechanical Properties of Solids", "Mechanical Properties of Fluids", "Thermal Properties of Matter", "Thermodynamics", "Kinetic Theory", "Oscillations", "Waves"],
+            "Chemistry": ["Some Basic Concepts of Chemistry", "Structure of Atom", "Classification of Elements and Periodicity", "Chemical Bonding and Molecular Structure", "States of Matter", "Thermodynamics", "Equilibrium", "Redox Reactions", "Hydrogen", "The s-Block Elements", "The p-Block Elements", "Organic Chemistry – Some Basic Principles and Techniques", "Hydrocarbons", "Environmental Chemistry"],
+            "Biology": ["The Living World", "Biological Classification", "Plant Kingdom", "Animal Kingdom", "Morphology of Flowering Plants", "Anatomy of Flowering Plants", "Structural Organisation in Animals", "Cell: The Unit of Life", "Biomolecules", "Cell Cycle and Cell Division", "Transport in Plants", "Mineral Nutrition", "Photosynthesis in Higher Plants", "Respiration in Plants", "Plant Growth and Development", "Digestion and Absorption", "Breathing and Exchange of Gases", "Body Fluids and Circulation", "Excretory Products and their Elimination", "Locomotion and Movement", "Neural Control and Coordination", "Chemical Coordination and Integration"],
+            "Maths": ["Sets", "Relations and Functions", "Trigonometric Functions", "Principle of Mathematical Induction", "Complex Numbers and Quadratic Equations", "Linear Inequalities", "Permutations and Combinations", "Binomial Theorem", "Sequence and Series", "Straight Lines", "Conic Sections", "Introduction to Three Dimensional Geometry", "Limits and Derivatives", "Mathematical Reasoning", "Statistics", "Probability"],
+            "English": ["The Portrait of a Lady", "A Photograph", "We're Not Afraid to Die...", "The Laburnum Top", "Discovering Tut: the Saga Continues", "The Voice of the Rain", "Childhood", "The Adventure", "Silk Road", "Father to Son", "The Summer of the Beautiful White Horse", "The Address", "Mother's Day", "Birth", "The Tale of Melon City"],
+            "SST": ["Constitution: Why and How?", "Rights in the Indian Constitution", "Election and Representation", "Executive", "Legislature", "Judiciary", "Federalism", "Local Governments", "Constitution as a Living Document", "The Philosophy of the Constitution", "Political Theory: An Introduction", "Freedom", "Equality", "Social Justice", "Rights", "Citizenship", "Nationalism", "Secularism", "Peace", "Development", "From the Beginning of Time", "Writing and City Life", "An Empire Across Three Continents", "The Central Islamic Lands", "Nomadic Empires", "The Three Orders", "Changing Cultural Traditions", "Confrontation of Cultures", "The Industrial Revolution", "Displacing Indigenous Peoples", "Paths to Modernization"]
+        },
+        "12": {
+            "Physics": ["Electric Charges and Fields", "Electrostatic Potential and Capacitance", "Current Electricity", "Moving Charges and Magnetism", "Magnetism and Matter", "Electromagnetic Induction", "Alternating Current", "Electromagnetic Waves", "Ray Optics and Optical Instruments", "Wave Optics", "Dual Nature of Radiation and Matter", "Atoms", "Nuclei", "Semiconductor Electronics", "Communication Systems"],
+            "Chemistry": ["The Solid State", "Solutions", "Electrochemistry", "Chemical Kinetics", "Surface Chemistry", "General Principles and Processes of Isolation of Elements", "The p-Block Elements", "The d-and f-Block Elements", "Coordination Compounds", "Haloalkanes and Haloarenes", "Alcohols, Phenols and Ethers", "Aldehydes, Ketones and Carboxylic Acids", "Amines", "Biomolecules", "Polymers", "Chemistry in Everyday Life"],
+            "Maths": ["Relations and Functions", "Inverse Trigonometric Functions", "Matrices", "Determinants", "Continuity and Differentiability", "Applications of Derivatives", "Integrals", "Applications of Integrals", "Differential Equations", "Vector Algebra", "Three Dimensional Geometry", "Linear Programming", "Probability"],
+            "Biology": ["Reproduction in Organisms", "Sexual Reproduction in Flowering Plants", "Human Reproduction", "Reproductive Health", "Principles of Inheritance and Variation", "Molecular Basis of Inheritance", "Evolution", "Human Health and Disease", "Strategies for Enhancement in Food Production", "Microbes in Human Welfare", "Biotechnology: Principles and Processes", "Biotechnology and its Applications", "Organisms and Populations", "Ecosystem", "Biodiversity and Conservation", "Environmental Issues"],
+            "English": ["The Last Lesson", "My Mother at Sixty-six", "Lost Spring", "An Elementary School Classroom in a Slum", "Deep Water", "Keeping Quiet", "The Rattrap", "A Thing of Beauty", "Indigo", "A Roadside Stand", "Poets and Pancakes", "Aunt Jennifer's Tigers", "The Interview", "Going Places", "The Third Level", "The Tiger King", "Journey to the end of the Earth", "The Enemy", "Should Wizard hit Mommy?", "On the face of It", "Evans Tries an O-level", "Memories of Childhood"],
+            "SST": ["Bricks, Beads and Bones", "Kings, Farmers and Towns", "Kinship, Caste and Class", "Thinkers, Beliefs and Buildings", "Through the Eyes of Travellers", "Bhakti-Sufi Traditions", "An Imperial Capital: Vijayanagara", "Peasants, Zamindars and the State", "Kings and Chronicles", "Colonialism and the Countryside", "Rebels and the Raj", "Colonial Cities", "Mahatma Gandhi and the Nationalist Movement", "Understanding Partition", "Framing the Constitution", "The Cold War Era", "The End of Bipolarity", "US Hegemony in World Politics", "Alternative Centres of Power", "Contemporary South Asia", "International Organisations", "Security in the Contemporary World", "Environment and Natural Resources", "Globalisation", "Challenges of Nation Building", "Era of One-party Dominance", "Politics of Planned Development", "India’s External Relations", "Challenges to and Restoration of the Congress System", "The Crisis of Democratic Order", "Rise of Popular Movements", "Regional Aspirations", "Recent Developments in Indian Politics"]
+        }
     };
 
-    function updateChapters() {
-        const classVal = document.getElementById('classInput').value;
-        const chapterDropdown = document.getElementById('chapterInput');
-        chapterDropdown.innerHTML = ''; // Clear previous
+    const classInput = document.getElementById('classInput');
+    const subInput = document.getElementById('subjectInput');
+    const chapInput = document.getElementById('chapterInput');
 
-        if (ncertChapters[classVal]) {
-            ncertChapters[classVal].forEach(chap => {
-                let option = document.createElement('option');
-                option.value = chap;
-                option.text = chap;
-                chapterDropdown.appendChild(option);
+    // Fill Class Dropdown
+    classInput.innerHTML = '<option value="" disabled selected>Select Class</option>';
+    Object.keys(ncertData).forEach(cls => {
+        classInput.innerHTML += `<option value="${cls}">Class ${cls}</option>`;
+    });
+
+    function updateSubjects() {
+        const cls = classInput.value;
+        subInput.innerHTML = '<option value="" disabled selected>Select Subject</option>';
+        if(ncertData[cls]) {
+            Object.keys(ncertData[cls]).forEach(sub => {
+                subInput.innerHTML += `<option value="${sub}">${sub}</option>`;
             });
         }
     }
 
-    // --- YOUR ORIGINAL CONFIGURATION ---
+    function updateChapters() {
+        const cls = classInput.value;
+        const sub = subInput.value;
+        chapInput.innerHTML = '<option value="" disabled selected>Select Chapter</option>';
+        if(ncertData[cls] && ncertData[cls][sub]) {
+            ncertData[cls][sub].forEach(chap => {
+                chapInput.innerHTML += `<option value="${chap}">${chap}</option>`;
+            });
+        }
+    }
+
     const SUPABASE_URL = 'https://jpzjmpkjuxcdztvnvxjn.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpwemptcGtqdXhjZHp0dm52eGpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyODEwNTksImV4cCI6MjA4NDg1NzA1OX0.HO4leTKLb5kh_qwP_Gl8ZJ5azWPFFeAAWvUJMCvCCFs';
-
     const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    let myChannel = null;
-    let currentUser = null;
-    let myProfile = {};
-    let activeChatPartner = null;
+    let myChannel = null, currentUser = null, activeChatPartner = null;
 
-    async function handleGoogleLogin() {
-        if (window.location.protocol === 'file:') {
-            alert("Google Login Error: VS Code mein 'Live Server' use karein.");
-            return;
-        }
-        try {
-            const { data, error } = await client.auth.signInWithOAuth({
-                provider: 'google',
-                options: { redirectTo: window.location.href } 
-            });
-            if (error) throw error;
-        } catch (error) {
-            alert("Google Login Error: " + error.message);
-        }
+    async function handleGoogleLogin() { 
+        await client.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } }); 
     }
-
-    async function logout() {
-        await client.auth.signOut();
-        localStorage.removeItem('study_username');
-        location.reload();
+    
+    async function logout() { 
+        await client.auth.signOut(); localStorage.removeItem('study_username'); location.reload(); 
     }
 
     client.auth.onAuthStateChange((event, session) => {
         if (session) {
             currentUser = session.user;
-            const savedName = localStorage.getItem('study_username');
-            const googleName = currentUser.user_metadata.full_name;
-            const finalName = savedName || googleName || "Student";
-            document.getElementById('welcome-msg').innerText = `Welcome, ${finalName}`;
-            document.getElementById('welcome-msg').style.display = 'block';
-            document.getElementById('username').value = finalName;
-            if (savedName) document.getElementById('username-group').style.display = 'none';
+            const name = localStorage.getItem('study_username') || currentUser.user_metadata.full_name;
+            document.getElementById('username').value = name;
+            document.getElementById('welcome-msg').innerText = `Logged in as: ${name}`;
             document.getElementById('auth-container').style.display = 'none';
             document.getElementById('setup-section').style.display = 'block';
-        } else {
-            document.getElementById('auth-container').style.display = 'block';
-        }
+        } else { document.getElementById('auth-container').style.display = 'block'; }
     });
 
     function enterStudyRoom() {
-        const name = document.getElementById('username').value;
-        const cls = document.getElementById('classInput').value;
-        const chapter = document.getElementById('chapterInput').value;
-
-        if(!name || !cls || !chapter) { alert("Please select Class and Chapter"); return; }
-
-        myProfile = { name, cls, chapter, id: currentUser.id };
+        const name = document.getElementById('username').value, cls = classInput.value, sub = subInput.value, chap = chapInput.value;
+        if(!cls || !sub || !chap) return alert("Please fill all fields!");
         localStorage.setItem('study_username', name);
         document.getElementById('setup-section').style.display = 'none';
         document.getElementById('results-section').style.display = 'block';
         document.getElementById('chat-section').style.display = 'block';
-        document.getElementById('search-status').innerText = `Joined Room: Class ${cls} - ${chapter}`;
-
-        const channelName = `room:${cls}-${chapter.toLowerCase().replace(/\s/g, '-')}`;
-        myChannel = client.channel(channelName, { config: { presence: { key: currentUser.id } } });
-
-        myChannel
-        .on('presence', { event: 'sync' }, () => { updateUserList(myChannel.presenceState()); })
-        .on('broadcast', { event: 'message' }, (payload) => {
-            const msg = payload.payload;
-            if (msg.to === currentUser.id && activeChatPartner && msg.from === activeChatPartner.id) {
-                displayMessage(msg, 'received');
-            }
-        })
-        .subscribe(async (status) => {
-            if (status === 'SUBSCRIBED') await myChannel.track(myProfile);
-        });
-    }
-
-    function updateUserList(state) {
-        const listDiv = document.getElementById('users-list');
-        listDiv.innerHTML = '';
-        const users = [];
-        for (const id in state) { users.push(state[id][0]); }
-
-        if(users.length <= 1) listDiv.innerHTML = '<p>Abhi sirf aap online hain.</p>';
-
-        users.forEach(user => {
-            if(user.id === currentUser.id) return;
-            const card = document.createElement('div');
-            card.className = `user-card ${activeChatPartner && activeChatPartner.id === user.id ? 'active' : ''}`;
-            card.onclick = () => startChat(user);
-            card.innerHTML = `<div class="user-info"><h3>${user.name}</h3><p>Studying: ${user.chapter}</p></div><div class="online-dot"></div>`;
-            listDiv.appendChild(card);
-        });
-    }
-
-    function startChat(user) {
-        activeChatPartner = user;
-        document.getElementById('chat-header').innerText = `Chatting with ${user.name} 🌿`;
-        document.getElementById('chat-interface').style.display = 'block';
-        document.getElementById('chat-box').innerHTML = '';
-        updateUserList(myChannel.presenceState());
-    }
-
-    function leaveRoom() {
-        if(myChannel) client.removeChannel(myChannel);
-        location.reload();
+        
+        const roomID = `room_${cls}_${sub}_${chap}`.replace(/\s+/g, '_').toLowerCase();
+        myChannel = client.channel(roomID, { config: { presence: { key: currentUser.id } } });
+        
+        myChannel.on('presence', { event: 'sync' }, () => {
+            const listDiv = document.getElementById('users-list'); listDiv.innerHTML = '';
+            const users = Object.values(myChannel.presenceState()).map(v => v[0]);
+            if(users.length <= 1) listDiv.innerHTML = '<p style="text-align:center">Waiting for others to join...</p>';
+            users.forEach(u => {
+                if(u.id === currentUser.id) return;
+                const div = document.createElement('div'); div.className = 'user-card';
+                div.innerHTML = `<div><strong>${u.name}</strong><br><small>Studying: ${u.chap}</small></div>`;
+                div.onclick = () => { 
+                    activeChatPartner = u; 
+                    document.getElementById('chat-interface').style.display = 'block'; 
+                    document.getElementById('chat-header').innerText = `Chat with ${u.name}`;
+                    document.querySelectorAll('.user-card').forEach(c => c.classList.remove('active'));
+                    div.classList.add('active');
+                };
+                listDiv.appendChild(div);
+            });
+        }).on('broadcast', { event: 'msg' }, (p) => {
+            if(p.payload.to === currentUser.id && activeChatPartner?.id === p.payload.from) displayMsg(p.payload, 'received');
+        }).subscribe(async (s) => { if(s === 'SUBSCRIBED') await myChannel.track({ name, cls, sub, chap, id: currentUser.id }); });
     }
 
     async function sendMessage() {
         const input = document.getElementById('messageInput');
         if(!input.value || !activeChatPartner) return;
-        const payload = { user: myProfile.name, text: input.value, to: activeChatPartner.id, from: currentUser.id, type: 'text' };
-        await myChannel.send({ type: 'broadcast', event: 'message', payload: payload });
-        displayMessage(payload, 'sent');
-        input.value = '';
+        const payload = { text: input.value, to: activeChatPartner.id, from: currentUser.id };
+        await myChannel.send({ type: 'broadcast', event: 'msg', payload });
+        displayMsg(payload, 'sent'); input.value = '';
     }
 
-    function displayMessage(data, type) {
-        const chatBox = document.getElementById('chat-box');
-        const div = document.createElement('div');
-        div.className = `message ${type}`;
-        div.innerText = data.text;
-        chatBox.appendChild(div);
-        chatBox.scrollTop = chatBox.scrollHeight;
+    function displayMsg(data, type) {
+        const box = document.getElementById('chat-box'), d = document.createElement('div');
+        d.className = `message ${type}`; d.innerText = data.text;
+        box.appendChild(d); box.scrollTop = box.scrollHeight;
     }
 </script>
 </body>
