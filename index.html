@@ -1,156 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Study Buddy Finder</title>
-    <!-- Supabase Library -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #000000;
-            color: #e0e0e0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            align-items: center;
-        }
-        .container {
-            width: 100%;
-            max-width: 800px;
-            background: rgba(20, 20, 20, 0.85); /* Dark Glassmorphism */
-            backdrop-filter: blur(10px);
-            padding: 20px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        h1, h2 { text-align: center; color: #fff; font-weight: 400; letter-spacing: 1px; }
-        .auth-card {
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        .subtitle {
-            text-align: center;
-            color: #aaa;
-            margin-top: -10px;
-            margin-bottom: 20px;
-        }
-
-        /* Form Sections */
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #444;
-            border-radius: 15px;
-            box-sizing: border-box;
-            transition: border-color 0.3s, box-shadow 0.3s;
-            background: rgba(40, 40, 40, 0.9);
-            color: white;
-        }
-        input:focus, select:focus {
-            border-color: #a18cd1;
-            outline: none;
-            box-shadow: 0 0 10px rgba(161, 140, 209, 0.2);
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background-image: linear-gradient(to right, #a18cd1 0%, #fbc2eb 100%);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: transform 0.2s;
-        }
-        button:hover { transform: scale(1.02); opacity: 0.9; }
-        
-        .google-btn {
-            background-color: white;
-            color: #333;
-            border: 1px solid #ddd;
-            margin-top: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            background: white !important; /* Override gradient */
-        }
-        .google-btn:hover { background-color: #f8f9fa; border-color: #ccc; }
-
-        /* Sections Visibility */
-        #auth-container, #setup-section, #results-section, #chat-section, #register-panel { display: none; margin-top: 20px; }
-        
-        .user-card {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #444;
-            background: rgba(40, 40, 40, 0.6);
-            margin-bottom: 10px;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .user-card:hover { background: rgba(60, 60, 60, 0.9); }
-        .user-card.active { border: 2px solid #a18cd1; background: #333; }
-        
-        .user-info p { margin: 0; color: #bbb; font-size: 14px; }
-        .online-dot {
-            height: 10px; width: 10px; background-color: #4caf50; border-radius: 50%; display: inline-block;
-        }
-
-        /* Chat Section */ 
-        #chat-box {
-            height: 300px;
-            border: 1px solid #444;
-            overflow-y: scroll;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.3);
-            margin-bottom: 10px;
-            border-radius: 15px;
-        }
-        .message {
-            margin-bottom: 10px;
-            padding: 8px 12px;
-            border-radius: 15px;
-            max-width: 70%;
-            clear: both;
-            font-size: 14px;
-            word-wrap: break-word;
-        }
-        .message.sent { background: #d4fc79; background: linear-gradient(to right, #96e6a1 0%, #d4fc79 100%); float: right; color: #333; }
-        .message.received { background: #333; color: white; float: left; }
-        
-        .chat-input-area { display: flex; gap: 10px; align-items: center; }
-        
-        #welcome-msg { position: absolute; top: 20px; right: 20px; font-weight: bold; color: #a18cd1; display: none; }
-    </style>
-</head>
-<body>
-<div id="welcome-msg"></div>
-
-<div class="container">
-    <!-- Step 0: Auth (Login/Register) -->
-    <div id="auth-container">
-        <!-- Login Panel -->
-        <div id="login-panel" class="auth-card">
-            <h2>Study Buddy </h2>
-            <p class="subtitle">Relax, Connect, Learn.</p>
-            <button onclick="handleGoogleLogin()" class="google-btn">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" height="18">
-                Continue with Google
-            </button>
-        </div>
-    </div>
-
-    <!-- Step 1: User Setup (Class/Chapter) -->
-    <div id="setup-section">
+<div id="setup-section">
         <h1>Find Study Buddy </h1>
         <div class="form-group" id="username-group">
             <label>Name:</label>
@@ -158,276 +6,56 @@
         </div>
         <div class="form-group">
             <label>Class:</label>
-            <select id="classInput">
-            <option value="1">Class 1</option>
-            <option value="2">Class 2</option>
-            <option value="3">Class 3</option>
-            <option value="4">Class 4</option>
-            <option value="5">Class 5</option>
-            <option value="6">Class 6</option>
-            <option value="7">Class 7</option>
-            <option value="8">Class 8</option>
-            <option value="9">Class 9</option>
-            <option value="10">Class 10</option>
-            <option value="11">Class 11</option>
-            <option value="12">Class 12</option>
+            <select id="classInput" onchange="updateChapters()">
+                <option value="" disabled selected>Select Class</option>
+                <option value="6">Class 6</option>
+                <option value="7">Class 7</option>
+                <option value="8">Class 8</option>
+                <option value="9">Class 9</option>
+                <option value="10">Class 10</option>
             </select>
         </div>
         <div class="form-group">
-            <label>Chapter Name (Currently studying):</label>
-            <input type="text" id="chapterInput" placeholder="Ex: Motion, Force, Gravitation">
+            <label>Chapter Name:</label>
+            <select id="chapterInput">
+                <option value="">Pehle Class Select Karein</option>
+            </select>
         </div>
         <button onclick="enterStudyRoom()">Join Room</button>
         <button onclick="logout()" style="background:#dc3545; margin-top:10px;">Logout</button>
     </div>
 
-    <!-- Step 2: List of Users -->
-    <div id="results-section">
-        <h2>Available Students </h2>
-        <p id="search-status"></p>
-        <p style="text-align:center; font-size:12px; color:#777;">Click on a student to start chatting privately</p>
-        <div id="users-list"></div>
-        <button onclick="leaveRoom()" style="background:#6c757d; margin-top:10px;">Leave Room</button>
-    </div>
-
-    <!-- Step 3: Chat Interface -->
-    <div id="chat-section">
-        <h2 id="chat-header">Select a user to chat</h2>
-        
-        <div id="chat-interface" style="display:none;">
-            <div id="chat-box"></div>
-            <div class="chat-input-area">
-                <input type="text" id="messageInput" placeholder="Type message...">
-                <button onclick="sendMessage()" style="width: auto;">➤</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
-    // --- CONFIGURATION ---
-    // Yahan apna Supabase URL aur Key daalein
-    const SUPABASE_URL = 'https://jpzjmpkjuxcdztvnvxjn.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpwemptcGtqdXhjZHp0dm52eGpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyODEwNTksImV4cCI6MjA4NDg1NzA1OX0.HO4leTKLb5kh_qwP_Gl8ZJ5azWPFFeAAWvUJMCvCCFs';
+    // NCERT Data Object (Science & Maths Chapters)
+    const ncertData = {
+        "6": ["Food: Where Does It Come From?", "Components of Food", "Sorting Materials", "Body Movements", "The Living Organisms", "Light, Shadows and Reflections", "Electricity and Circuits", "Knowing Our Numbers", "Whole Numbers", "Algebra"],
+        "7": ["Nutrition in Plants", "Nutrition in Animals", "Heat", "Acids, Bases and Salts", "Physical and Chemical Changes", "Respiration in Organisms", "Transportation in Animals and Plants", "Reproduction in Plants", "Motion and Time", "Integers", "Fractions and Decimals"],
+        "8": ["Crop Production", "Microorganisms", "Coal and Petroleum", "Combustion and Flame", "Cell - Structure and Functions", "Reproduction in Animals", "Force and Pressure", "Friction", "Sound", "Rational Numbers", "Linear Equations"],
+        "9": ["Matter in Our Surroundings", "Is Matter Around Us Pure", "Atoms and Molecules", "The Fundamental Unit of Life", "Tissues", "Motion", "Force and Laws of Motion", "Gravitation", "Work and Energy", "Sound", "Number Systems", "Polynomials"],
+        "10": ["Chemical Reactions", "Acids, Bases and Salts", "Metals and Non-metals", "Life Processes", "Control and Coordination", "Light - Reflection and Refraction", "Human Eye", "Electricity", "Magnetic Effects of Current", "Real Numbers", "Quadratic Equations", "Trigonometry"]
+    };
 
-    // Initialize Supabase
-    const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // Function to update Chapter dropdown based on Class
+    function updateChapters() {
+        const classSelect = document.getElementById('classInput');
+        const chapterSelect = document.getElementById('chapterInput');
+        const selectedClass = classSelect.value;
 
-    // State Variables
-    let myChannel = null;
-    let currentUser = null;
-    let myProfile = {}; // Stores name, class, chapter
-    let activeChatPartner = null; // The user I am currently chatting with
+        // Clear previous options
+        chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
 
-    async function handleGoogleLogin() {
-        if (window.location.protocol === 'file:') {
-            alert("Google Login Error: Yeh feature direct file open karne par kaam nahi karega.\n\nPlease VS Code mein 'Live Server' extension use karein taaki URL 'http://' se shuru ho.");
-            return;
-        }
-
-        try {
-            const { data, error } = await client.auth.signInWithOAuth({
-                provider: 'google',
-                options: { redirectTo: window.location.href } 
+        if (ncertData[selectedClass]) {
+            ncertData[selectedClass].forEach(chapter => {
+                const option = document.createElement('option');
+                option.value = chapter;
+                option.textContent = chapter;
+                chapterSelect.appendChild(option);
             });
-            if (error) throw error;
-        } catch (error) {
-            alert("Google Login Error: " + error.message);
         }
     }
 
-    async function logout() {
-        await client.auth.signOut();
-        localStorage.removeItem('study_username');
-        location.reload();
-    }
+    // --- बाकी सारा Supabase और Chat वाला Logic वही रहेगा जो तूने दिया था ---
+    // बस ensure करना कि enterStudyRoom() में chapterInput.value सही से मिल रहा है।
 
-    // Auth State Listener (Better than checkUser)
-    client.auth.onAuthStateChange((event, session) => {
-        if (session) {
-            const user = session.user;
-            currentUser = user;
-            
-            // Logic for Name Persistence
-            const savedName = localStorage.getItem('study_username');
-            const googleName = user.user_metadata.full_name;
-            const finalName = savedName || googleName || "Student";
-
-            // Show Welcome Name in Corner
-            const welcomeDiv = document.getElementById('welcome-msg');
-            welcomeDiv.innerText = `Welcome, ${finalName}`;
-            welcomeDiv.style.display = 'block';
-
-            // Pre-fill Name
-            document.getElementById('username').value = finalName;
-
-            // If name is already saved (Old User), hide the name input for direct feel
-            // If new user, show input to ask name
-            if (savedName) {
-                document.getElementById('username-group').style.display = 'none';
-            } else {
-                document.getElementById('username-group').style.display = 'block';
-            }
-
-            // Show Setup Section (Room Entry)
-            document.getElementById('auth-container').style.display = 'none';
-            document.getElementById('setup-section').style.display = 'block';
-        } else {
-            document.getElementById('auth-container').style.display = 'block';
-            document.getElementById('setup-section').style.display = 'none';
-        }
-    });
-
-    // --- REALTIME ROOM LOGIC ---
-
-    function enterStudyRoom() {
-        const name = document.getElementById('username').value;
-        const cls = document.getElementById('classInput').value;
-        const chapter = document.getElementById('chapterInput').value;
-
-        if(!name || !chapter) { alert("Please fill all details"); return; }
-
-        myProfile = { name, cls, chapter, id: currentUser.id };
-        
-        // Save Name to LocalStorage for next time
-        localStorage.setItem('study_username', name);
-
-        // Update Welcome Message
-        document.getElementById('welcome-msg').innerText = `Welcome, ${name}`;
-
-        // UI Updates
-        document.getElementById('setup-section').style.display = 'none';
-        document.getElementById('results-section').style.display = 'block';
-        document.getElementById('chat-section').style.display = 'block';
-        document.getElementById('search-status').innerText = `Joined Room: Class ${cls} - ${chapter}`;
-        document.getElementById('chat-header').innerText = `Select a student to chat`;
-
-        // Join Supabase Channel
-        const channelName = `room:${cls}-${chapter.toLowerCase().replace(/\s/g, '-')}`;
-        
-        myChannel = client.channel(channelName, {
-            config: {
-                presence: {
-                    key: currentUser.id,
-                },
-            },
-        });
-
-        myChannel
-        .on('presence', { event: 'sync' }, () => {
-            const newState = myChannel.presenceState();
-            updateUserList(newState);
-        })
-        .on('broadcast', { event: 'message' }, (payload) => {
-            // Filter: Only show if it's for ME or from ME (to sync devices)
-            const msg = payload.payload;
-            
-            // If I am the receiver AND I am currently chatting with the sender
-            if (msg.to === currentUser.id && activeChatPartner && msg.from === activeChatPartner.id) {
-                displayMessage(msg, 'received');
-            }
-        })
-        .subscribe(async (status) => {
-            if (status === 'SUBSCRIBED') {
-                await myChannel.track(myProfile);
-            }
-        });
-    }
-
-    function updateUserList(state) {
-        const listDiv = document.getElementById('users-list');
-        listDiv.innerHTML = '';
-        
-        // State object keys are user IDs, values are arrays of presence objects
-        const users = [];
-        for (const id in state) {
-            users.push(state[id][0]); // Get the first presence object for this user
-        }
-
-        if(users.length <= 1) {
-             listDiv.innerHTML = '<p>Abhi sirf aap online hain is chapter mein.</p>';
-        }
-
-        users.forEach(user => {
-            if(user.id === currentUser.id) return; // Don't show myself
-
-            const card = document.createElement('div');
-            card.className = `user-card ${activeChatPartner && activeChatPartner.id === user.id ? 'active' : ''}`;
-            card.onclick = () => startChat(user);
-            card.innerHTML = `
-                <div class="user-info">
-                    <h3>${user.name}</h3>
-                    <p>Studying: ${user.chapter}</p>
-                </div>
-                <div class="online-dot"></div>
-            `;
-            listDiv.appendChild(card);
-        });
-    }
-
-    function startChat(user) {
-        activeChatPartner = user;
-        document.getElementById('chat-header').innerText = `Chatting with ${user.name} 🌿`;
-        document.getElementById('chat-interface').style.display = 'block';
-        document.getElementById('chat-box').innerHTML = ''; // Clear chat for new user
-        
-        // Refresh list to show active state
-        updateUserList(myChannel.presenceState());
-    }
-
-    function leaveRoom() {
-        if(myChannel) {
-            client.removeChannel(myChannel);
-        }
-        document.getElementById('results-section').style.display = 'none';
-        document.getElementById('chat-section').style.display = 'none';
-        document.getElementById('setup-section').style.display = 'block';
-        document.getElementById('users-list').innerHTML = '';
-        document.getElementById('chat-box').innerHTML = '';
-        activeChatPartner = null;
-    }
-
-    // --- CHAT LOGIC ---
-
-    async function sendMessage() {
-        const input = document.getElementById('messageInput');
-        const msg = input.value;
-        if(!msg || !activeChatPartner) return;
-
-        const payload = { 
-            user: myProfile.name, 
-            text: msg, 
-            to: activeChatPartner.id,
-            from: currentUser.id,
-            type: 'text'
-        };
-
-        // Send to Supabase Channel
-        await myChannel.send({
-            type: 'broadcast',
-            event: 'message',
-            payload: payload
-        });
-
-        // Show my own message
-        displayMessage(payload, 'sent');
-        input.value = '';
-    }
-
-    function displayMessage(data, type) {
-        const chatBox = document.getElementById('chat-box');
-        const div = document.createElement('div');
-        div.className = `message ${type}`;
-        
-        if (data.type === 'text') {
-            div.innerText = data.text;
-        }
-        
-        chatBox.appendChild(div);
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
+    // ... (Your existing Supabase config and functions) ...
 </script>
-
-</body>
-</html>
-
